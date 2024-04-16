@@ -5,6 +5,7 @@ import ContactList from "../ContactList/ContactList";
 import SearchBox from "../SearchBox/SearchBox";
 import ContactForm from "../ContactForm/ContactForm";
 import * as Yup from "yup";
+import { useEffect } from "react";
 
 function App() {
   const initialValues = {
@@ -13,7 +14,14 @@ function App() {
     number: "",
   };
 
-  const [contacts, setContacts] = useState(initialContacts);
+  const [contacts, setContacts] = useState(() => {
+    const savedContacts = window.localStorage.getItem("saved-contacts");
+    console.log(savedContacts);
+    if (savedContacts !== null) {
+      return JSON.parse(savedContacts);
+    }
+    return initialContacts;
+  });
   const [search, setSearch] = useState("");
 
   const addContact = (newContact) => {
@@ -40,6 +48,10 @@ function App() {
   const visibleContacts = contacts.filter((contact) =>
     contact.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  useEffect(() => {
+    window.localStorage.setItem("saved-contacts", JSON.stringify(contacts));
+  }, [contacts]);
 
   return (
     <div className={css.container}>
